@@ -1,12 +1,8 @@
-import pygame, random, easygui, time
-
-def positiezien():
-    player_x = vakjes[posities[beurt]][0]
-    player_y = vakjes[posities[beurt]][1]            
-    screen.blit(eval(f"speler{beurt}"), (player_x, player_y))
-    pygame.display.flip()
-
-
+import pygame, random, easygui, time, variabelen
+from PIL import Image, ImageTk
+from tkinter import messagebox
+from tkinter import *  
+from blackjackspel import blackjack
 
 def radvanfortuin():
     global score
@@ -17,7 +13,7 @@ def radvanfortuin():
     print(gekozen_woord)
     #per woord dat random gekozen is is er een actie die gebeurd
     if gekozen_woord == "['verder']":
-        posities[beurt] =+ 45  
+        posities[beurt] =+ 48  
         print("top je mag verder")
     elif gekozen_woord == "['+1']":
         score[beurt] =+ 1
@@ -38,29 +34,35 @@ def radvanfortuin():
     #Hoeveel punten de speler +- heeft gekregen
     print(f"Je score is nu {score[beurt]}")
 
+
 #alle posities van elk vakje op het bord
 vakjes = [
+#start-10
 [65,874], [207,874], [273,874], [273,808], [207,808], [136,808], [65,808], [65,743], [136,743], [207,743],
-[273,743], [762,743], [846,743], [846,808], [846,874], [931,874], [931,808], [931,746], [1015,743], 
-[1015,808],[1015,874], [1100,874], [1100,808], [1100,743], [1185,743], [1664, 743], [1747, 743], [1747, 677], 
-[1747, 610], [1747, 545], [1664, 545], [1579, 545], [1495, 545], [1495, 479], [1490, 160], [1490, 94], 
-[1409, 94], [1321, 94], [1236, 94], [1236, 160], [1236,227], [1184, 291], [1100,291], [1015,291], [1015,357], 
-[1015,423], [931,423], [931,357], [931,291], [846,291], [846,357], [846,423], [760, 423], [760, 357], [760,291],
-[676,291], [183,291], [38,291]
+[273,743], 
+#Blackjack
+[455,743], 
+# 12-25
+[762,743], [846,743], [846,808], [846,874], [931,874], [931,808], [931,746], [1015,743], [1015,808],[1015,874],
+[1100,874], [1100,808], [1100,743], [1185,743],
+#Roulette
+[1466,743],
+#27-36
+[1664, 743], [1747, 743], [1747, 677], [1747, 610], [1747, 545], [1664, 545], [1579, 545], [1495, 545], [1495, 479], 
+#Slots
+[1462, 414],
+#38-58
+[1490, 160], [1490, 94], [1409, 94], [1321, 94], [1236, 94], [1236, 160], [1236,227], [1184, 291], [1100,291], 
+[1015,291], [1015,357], [1015,423], [931,423], [931,357], [931,291], [846,291], [846,357], [846,423], [760, 423],
+[760, 357], [760,291],[676,291],
+#Poker
+[403,291],
+#60-einde
+[183,291], [38,291]
 ]
 
-posities = [0,0,0,0,0,0]
-
-score = [0,0,0,0,0,0]
-
-beurt = 0
-
-worp = 0
-
-winaar = -1
-
 #speler karakters
-bord = pygame.image.load("board (7).png")
+bord = pygame.image.load("board.png")
 speler0 = pygame.image.load("fisches/pokerp1.png")
 speler1 = pygame.image.load("fisches/pokerp2.png")
 speler2 = pygame.image.load("fisches/pokerp3.png")
@@ -69,6 +71,16 @@ speler4 = pygame.image.load("fisches/pokerp5.png")
 speler5 = pygame.image.load("fisches/pokerp6.png")
 
 done = False
+
+posities = [0,0,0,0,0,0]
+
+score = [10,10,10,10,10,10]
+
+beurt = 0
+
+worp = 0
+
+winaar = -1
 
 pygame.init()
   
@@ -92,18 +104,34 @@ while not done:
                 worp = random.randint(1,6) 
                 posities[beurt] += worp
 
-                if posities[beurt] == 18:
-                    antwoord1 = easygui.ynbox(f"Rad van Fortuin speler{beurt + 1}?", "Rad van Fortuin", ("ja", "nee"))
+                if posities[beurt] == 11:
+                    ja_nee = messagebox.askyesno(title="Blackjack?", message="Wil je het blackjack spel spelen?", detail="Win= 10 fisches verlies= -10 fisches gelijkspel= +1 fische")
+                    
+                    if not ja_nee:
+                        continue
+                    else:
+                        player_x = 455
+                        player_y = 743
+                        screen.blit(eval(f"speler{beurt}"), (player_x, player_y))
+                        pygame.display.flip()
+                        blackjack()
+                        score[beurt] += variabelen.score
+                        print(score[beurt])
 
-                    if antwoord1 == True:
+                if posities[beurt] == 19:
+                    ja_nee = messagebox.askyesno(title="Rad van fortuin?", message="Wil je het rad van fortuin draaien?", detail="Kans op route skip, +1 fische, +10 fisches en -10 fisches")
+                    
+                    if not ja_nee:
+                        continue
+                    else:
                         player_x = 1022
                         player_y = 764
                         screen.blit(eval(f"speler{beurt}"), (player_x, player_y))
                         pygame.display.flip()
                         radvanfortuin()
 
-                if posities[beurt] >= 61:
-                    posities[beurt] = 61
+                if posities[beurt] >= 66:
+                    posities[beurt] = 66
                     winaar = beurt
 
                 else:    
@@ -117,7 +145,6 @@ while not done:
                 posities = [0,0]
                 beurt = 0
                 winaar = -1
-
 
 
     clock.tick(30)
